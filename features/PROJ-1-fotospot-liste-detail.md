@@ -41,7 +41,86 @@
 <!-- Sections below are added by subsequent skills -->
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+### Seitenstruktur
+
+```
+App Layout (dunkel, dramatisch)
++-- Navigation Bar
+|   +-- Logo "Nordlicht" (links)
+|   +-- CTA Button "Spot einreichen" (rechts)
+|
++-- Home Page (/)
+|   +-- Hero Section
+|   |   +-- Atmosphärisches Hintergrundbild (Nordsee/Landschaft)
+|   |   +-- Headline + Subtext
+|   +-- Spot Grid (3 Spalten Desktop / 1 Mobile)
+|       +-- SpotCard [wiederholt]
+|           +-- Cover-Foto (16:9, next/image optimiert)
+|           +-- Name + Region-Badge
+|           +-- Kategorie-Tag(s)
+|           +-- Beschreibung (gekürzt, max. 120 Zeichen)
+|
++-- Spot Detailseite (/spots/[id])
+    +-- Hero-Bild (volle Breite)
+    +-- Spot-Header (Name, Region, Einreichungsdatum)
+    +-- Foto-Galerie (Lightbox beim Klick)
+    +-- Info-Bereich
+    |   +-- Beschreibung
+    |   +-- GPS-Koordinaten (→ Google Maps Link)
+    |   +-- Beste Tageszeit
+    |   +-- Empfohlene Ausrüstung
+    |   +-- Foto-Tipps & Winkel
+    +-- Kategorie-Tags
+    +-- Zurück-Button
+```
+
+### Datenmodell
+
+```
+Fotospot:
+- id            UUID (automatisch generiert)
+- name          Text, max. 200 Zeichen (Pflicht)
+- region        Auswahl: Schleswig-Holstein | Hamburg | Bremen |
+                Niedersachsen | Mecklenburg-Vorpommern (Pflicht)
+- latitude      Dezimalzahl, z.B. 53.5511 (Pflicht)
+- longitude     Dezimalzahl, z.B. 9.9937 (Pflicht)
+- description   Text, max. 2000 Zeichen (Pflicht)
+- best_time     Auswahl: morning | midday | evening | night (optional)
+- equipment     Text, max. 500 Zeichen (optional)
+- photo_tips    Text, max. 1000 Zeichen (optional)
+- categories    Liste von Tags (optional)
+- photos        Liste von Foto-URLs (aus Supabase Storage)
+- cover_photo   Erstes Foto = Titelbild für die Listenkarte
+- created_at    Zeitstempel (automatisch)
+- is_approved   true/false (Standard: true für MVP)
+
+Gespeichert in: Supabase PostgreSQL
+```
+
+### Tech-Entscheidungen
+
+| Entscheidung | Begründung |
+|---|---|
+| **Next.js Server Components** | Spots werden serverseitig geladen → schnelle Erstladezeit, gut für Google-Indexierung |
+| **Supabase PostgreSQL** | Kostenlos, einfache Integration, kein separater Backend-Server nötig |
+| **next/image** | Automatische Bildkomprimierung + Lazy Loading → schnellere Seite |
+| **shadcn/ui** | Bereits installiert, dunkles Theme direkt konfigurierbar |
+| **Lightbox** | Foto-Galerie mit Vollbild-Ansicht ohne eigene Implementierung |
+
+### Neue Pakete
+- `@supabase/supabase-js` – Supabase Datenbankverbindung
+- `@supabase/ssr` – Server-seitige Supabase-Abfragen in Next.js
+- `yet-another-react-lightbox` – Foto-Galerie Lightbox
+
+### Neue Dateien
+- `src/app/page.tsx` – Startseite mit Spot-Grid
+- `src/app/spots/[id]/page.tsx` – Spot-Detailseite
+- `src/components/SpotCard.tsx` – Wiederverwendbare Karten-Komponente
+- `src/components/PhotoGallery.tsx` – Galerie mit Lightbox
+- `src/lib/supabase.ts` – Supabase Client-Konfiguration
+- `src/app/api/spots/route.ts` – API: Alle Spots abrufen
+- `src/app/api/spots/[id]/route.ts` – API: Einzelnen Spot abrufen
 
 ## QA Test Results
 _To be added by /qa_

@@ -38,7 +38,71 @@
 
 ---
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+### Seitenstruktur
+
+```
+Einreich-Seite (/einreichen)
++-- Seitenheader (Titel + Subtext)
++-- Einreich-Formular
+    +-- Abschnitt 1: Grundinformationen
+    |   +-- Name des Spots (Pflichtfeld)
+    |   +-- Region (Dropdown, Pflichtfeld)
+    |   +-- GPS-Koordinaten (Lat/Lng, Pflichtfeld + Beispiel-Hinweis)
+    |   +-- Beschreibung (Textarea, Pflichtfeld)
+    |
+    +-- Abschnitt 2: Foto-Tipps (optional)
+    |   +-- Beste Tageszeit (Dropdown)
+    |   +-- Empfohlene Ausrüstung (Freitext)
+    |   +-- Foto-Tipps & Winkel (Textarea)
+    |
+    +-- Abschnitt 3: Kategorien (optional)
+    |   +-- Tag-Auswahl (Multiselect-Chips)
+    |   |   Küste | Wattenmeer | Wald | See/Teich |
+    |   |   Stadtansicht | Leuchtturm | Sonnenuntergang | Sonstiges
+    |
+    +-- Abschnitt 4: Fotos hochladen (PROJ-3)
+    |   +-- Drag & Drop Upload-Bereich
+    |   +-- Foto-Vorschauen
+    |
+    +-- Honeypot-Feld (unsichtbar, Spam-Schutz)
+    +-- Submit-Button (deaktiviert bis Pflichtfelder ausgefüllt)
+    +-- Erfolgsmeldung nach Einreichen
+```
+
+### Datenfluss
+
+```
+Nutzer füllt Formular aus
+        ↓
+Client-seitige Validierung (Pflichtfelder, Koordinatenformat)
+        ↓
+Fotos werden zuerst zu Supabase Storage hochgeladen (PROJ-3)
+        ↓
+Formular-Daten + Foto-URLs werden an API gesendet
+        ↓
+Server prüft Honeypot + sanitiert Eingaben
+        ↓
+Neuer Eintrag in Supabase-Datenbank gespeichert
+        ↓
+Erfolgsmeldung angezeigt, Formular zurückgesetzt
+```
+
+### Tech-Entscheidungen
+
+| Entscheidung | Begründung |
+|---|---|
+| **Anonym / kein Login** | Niedrige Hürde für Einreichungen → mehr Community-Beiträge |
+| **Honeypot-Feld** | Einfacher Spam-Schutz ohne CAPTCHA (bessere UX) |
+| **Client-seitige Validierung** | Sofortiges Feedback für Nutzer, weniger unnötige API-Aufrufe |
+| **Server-seitige Sanitierung** | Schutz vor schädlichen Eingaben (XSS) |
+| **Spots sofort sichtbar (kein Moderation)** | Einfacher MVP – Moderation kommt mit PROJ-5 |
+
+### Neue Dateien
+- `src/app/einreichen/page.tsx` – Einreich-Seite
+- `src/components/SubmitForm.tsx` – Formular-Komponente
+- `src/components/CategorySelector.tsx` – Multiselect-Tag-Auswahl
+- `src/app/api/spots/route.ts` – POST-Handler (neuen Spot speichern)
 
 ## QA Test Results
 _To be added by /qa_

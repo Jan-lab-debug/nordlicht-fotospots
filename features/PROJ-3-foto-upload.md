@@ -41,7 +41,71 @@
 
 ---
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+### Komponenten-Struktur
+
+```
+PhotoUploader (in SubmitForm eingebettet)
++-- Drag & Drop Bereich
+|   +-- Icon + Hinweistext ("Fotos hier hinziehen oder klicken")
+|   +-- Datei-Auswahl-Button (Fallback)
+|
++-- Vorschau-Grid (nach Upload)
+    +-- FotoVorschau [wiederholt, max. 5]
+        +-- Vorschaubild (thumbnail)
+        +-- Löschen-Button (×)
+        +-- "Titelbild"-Badge (erstes Foto)
+        +-- Fortschrittsbalken (während Upload)
+        +-- Fehlerstatus (wenn Upload fehlschlägt)
+
+PhotoGallery (auf Detailseite)
++-- Hauptbild (groß)
++-- Thumbnail-Reihe (weitere Fotos)
++-- Lightbox (öffnet beim Klick, Vollbild)
+```
+
+### Upload-Ablauf
+
+```
+Nutzer wählt Datei(en) aus / zieht sie in den Bereich
+        ↓
+Client prüft: Format (JPG/PNG/WebP) + Größe (max. 10 MB) + Anzahl (max. 5)
+        ↓ (bei Fehler → Fehlermeldung direkt im UI)
+Datei wird direkt an Supabase Storage hochgeladen
+Fortschrittsbalken zeigt Upload-Status
+        ↓
+Supabase gibt öffentliche URL zurück
+URL wird in der Formular-State gespeichert
+        ↓
+Beim Einreichen des Spots → URLs mit den Spot-Daten gespeichert
+```
+
+### Speicherstruktur in Supabase Storage
+
+```
+Bucket: spot-photos (öffentlich zugänglich)
+Ordnerstruktur: spot-photos/{uuid}/{uuid}-{1..5}.jpg
+Beispiel: spot-photos/a3f8.../a3f8...-1.jpg
+
+Zugriff: Öffentliche CDN-URL direkt von Supabase
+```
+
+### Tech-Entscheidungen
+
+| Entscheidung | Begründung |
+|---|---|
+| **Supabase Storage** | Direkt mit der Datenbank verbunden, CDN inklusive, kein separater Dienst nötig |
+| **UUID-Dateinamen** | Verhindert Dateinamen-Konflikte und Dateiname-Enumeration |
+| **Direkter Browser-Upload** | Schneller als Umweg über den Server, weniger Serverbelastung |
+| **Max. 5 Fotos** | Speicherkosten im Free-Tier begrenzen |
+| **react-dropzone** | Bewährte Bibliothek für Drag & Drop, gute Browser-Kompatibilität |
+
+### Neue Pakete
+- `react-dropzone` – Drag & Drop Datei-Upload UI
+
+### Neue Dateien
+- `src/components/PhotoUploader.tsx` – Upload-Komponente mit Vorschau
+- `src/lib/storage.ts` – Supabase Storage Hilfsfunktionen
 
 ## QA Test Results
 _To be added by /qa_
