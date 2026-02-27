@@ -1,6 +1,6 @@
 # PROJ-2: Fotospot einreichen
 
-## Status: Planned
+## Status: In Progress
 **Created:** 2026-02-27
 **Last Updated:** 2026-02-27
 
