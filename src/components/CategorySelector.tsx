@@ -31,7 +31,7 @@ export function CategorySelector({
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2.5">
       {CATEGORIES.map((cat) => {
         const isSelected = selected.includes(cat);
         return (
@@ -39,14 +39,14 @@ export function CategorySelector({
             key={cat}
             type="button"
             onClick={() => toggleCategory(cat)}
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg"
           >
             <Badge
               variant={isSelected ? "default" : "outline"}
-              className={`cursor-pointer select-none px-3 py-1.5 text-sm transition-all ${
+              className={`cursor-pointer select-none rounded-lg px-4 py-2 text-sm transition-all duration-300 ${
                 isSelected
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90"
+                  : "border-border/50 text-muted-foreground hover:border-primary/40 hover:text-foreground hover:bg-primary/5"
               }`}
             >
               {cat}

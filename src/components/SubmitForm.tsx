@@ -26,9 +26,15 @@ import {
 } from "@/components/ui/select";
 import { CategorySelector } from "@/components/CategorySelector";
 import { PhotoUploader, type UploadedPhoto } from "@/components/PhotoUploader";
-import { Loader2, CheckCircle2, MapPin, Camera, Lightbulb } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import {
+  Loader2,
+  CheckCircle2,
+  MapPin,
+  Camera,
+  Lightbulb,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 
 const REGIONS = [
   "Schleswig-Holstein",
@@ -168,56 +174,66 @@ export function SubmitForm() {
 
   if (isSuccess) {
     return (
-      <Card className="mx-auto max-w-lg border-primary/20 bg-card/50">
-        <CardContent className="flex flex-col items-center py-12 text-center">
-          <div className="mb-4 rounded-full bg-primary/10 p-4">
-            <CheckCircle2 className="h-10 w-10 text-primary" />
-          </div>
-          <h2 className="mb-2 text-2xl font-bold">
-            Spot erfolgreich eingereicht!
-          </h2>
-          <p className="mb-6 text-muted-foreground">
-            Vielen Dank! Dein Fotospot ist jetzt für alle sichtbar.
-          </p>
-          <div className="flex gap-3">
-            <Button asChild>
-              <Link href="/">Zur Übersicht</Link>
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsSuccess(false);
-                setSubmitError(null);
-              }}
-            >
-              Weiteren Spot einreichen
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="animate-scale-in mx-auto max-w-lg rounded-2xl border border-primary/20 bg-card/60 p-10 text-center">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+          <CheckCircle2 className="h-8 w-8 text-primary" />
+        </div>
+        <h2 className="mb-2 font-display text-2xl font-bold">
+          Spot erfolgreich eingereicht!
+        </h2>
+        <p className="mb-8 text-muted-foreground leading-relaxed">
+          Vielen Dank! Dein Fotospot ist jetzt für alle sichtbar.
+        </p>
+        <div className="flex justify-center gap-3">
+          <Button asChild className="gap-2 font-display font-semibold bg-primary hover:bg-primary/90">
+            <Link href="/">
+              Zur Übersicht
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            variant="outline"
+            className="border-border/60 hover:border-primary/40"
+            onClick={() => {
+              setIsSuccess(false);
+              setSubmitError(null);
+            }}
+          >
+            Weiteren Spot einreichen
+          </Button>
+        </div>
+      </div>
     );
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
         {/* Section 1: Basic Info */}
-        <Card className="border-border/50 bg-card/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <MapPin className="h-5 w-5 text-primary" />
-              Grundinformationen
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
+        <section>
+          <div className="mb-6 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2">
+              <MapPin className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <h2 className="font-display text-lg font-semibold">Grundinformationen</h2>
+              <p className="text-sm text-muted-foreground">Wo befindet sich der Spot?</p>
+            </div>
+          </div>
+
+          <div className="space-y-5 rounded-xl border border-border/30 bg-card/30 p-6">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name des Spots *</FormLabel>
+                  <FormLabel className="text-foreground/90">Name des Spots *</FormLabel>
                   <FormControl>
-                    <Input placeholder="z.B. Westerhever Leuchtturm" {...field} />
+                    <Input
+                      placeholder="z.B. Westerhever Leuchtturm"
+                      className="border-border/40 bg-background/50 focus:border-primary/50 transition-colors"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -229,13 +245,13 @@ export function SubmitForm() {
               name="region"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Region *</FormLabel>
+                  <FormLabel className="text-foreground/90">Region *</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="border-border/40 bg-background/50 focus:border-primary/50">
                         <SelectValue placeholder="Region auswählen..." />
                       </SelectTrigger>
                     </FormControl>
@@ -258,16 +274,17 @@ export function SubmitForm() {
                 name="latitude"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Breitengrad *</FormLabel>
+                    <FormLabel className="text-foreground/90">Breitengrad *</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
                         inputMode="decimal"
                         placeholder="z.B. 54.3741"
+                        className="border-border/40 bg-background/50 font-mono text-sm focus:border-primary/50"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>Dezimalformat, z.B. 54.3741</FormDescription>
+                    <FormDescription className="text-xs">Dezimalformat</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -277,16 +294,17 @@ export function SubmitForm() {
                 name="longitude"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Längengrad *</FormLabel>
+                    <FormLabel className="text-foreground/90">Längengrad *</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
                         inputMode="decimal"
                         placeholder="z.B. 8.6084"
+                        className="border-border/40 bg-background/50 font-mono text-sm focus:border-primary/50"
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>Dezimalformat, z.B. 8.6084</FormDescription>
+                    <FormDescription className="text-xs">Dezimalformat</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -298,48 +316,52 @@ export function SubmitForm() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Beschreibung *</FormLabel>
+                  <FormLabel className="text-foreground/90">Beschreibung *</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Beschreibe den Spot: Was macht ihn besonders? Wie kommt man hin? Was gibt es zu beachten?"
-                      className="min-h-[120px] resize-y"
+                      className="min-h-[140px] resize-y border-border/40 bg-background/50 focus:border-primary/50 transition-colors"
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
+                  <FormDescription className="text-xs">
                     {field.value?.length || 0} / 2000 Zeichen
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         {/* Section 2: Photo Tips */}
-        <Card className="border-border/50 bg-card/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Lightbulb className="h-5 w-5 text-accent" />
-              Foto-Tipps
-              <span className="text-sm font-normal text-muted-foreground">
-                (optional)
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
+        <section>
+          <div className="mb-6 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2">
+              <Lightbulb className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <h2 className="font-display text-lg font-semibold">
+                Foto-Tipps
+                <span className="ml-2 text-sm font-normal text-muted-foreground">(optional)</span>
+              </h2>
+              <p className="text-sm text-muted-foreground">Hilf anderen Fotografen den Spot optimal zu nutzen</p>
+            </div>
+          </div>
+
+          <div className="space-y-5 rounded-xl border border-border/30 bg-card/30 p-6">
             <FormField
               control={form.control}
               name="best_time"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Beste Tageszeit</FormLabel>
+                  <FormLabel className="text-foreground/90">Beste Tageszeit</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="border-border/40 bg-background/50 focus:border-primary/50">
                         <SelectValue placeholder="Tageszeit auswählen..." />
                       </SelectTrigger>
                     </FormControl>
@@ -361,10 +383,11 @@ export function SubmitForm() {
               name="equipment"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Empfohlene Ausrüstung</FormLabel>
+                  <FormLabel className="text-foreground/90">Empfohlene Ausrüstung</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="z.B. Weitwinkel, Stativ, ND-Filter"
+                      className="border-border/40 bg-background/50 focus:border-primary/50"
                       {...field}
                     />
                   </FormControl>
@@ -378,11 +401,11 @@ export function SubmitForm() {
               name="photo_tips"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Foto-Tipps & Winkel</FormLabel>
+                  <FormLabel className="text-foreground/90">Foto-Tipps & Winkel</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="z.B. Bester Winkel von Süden, Vordergrund mit Strandhafer nutzen..."
-                      className="min-h-[80px] resize-y"
+                      className="min-h-[100px] resize-y border-border/40 bg-background/50 focus:border-primary/50"
                       {...field}
                     />
                   </FormControl>
@@ -390,46 +413,55 @@ export function SubmitForm() {
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         {/* Section 3: Categories */}
-        <Card className="border-border/50 bg-card/50">
-          <CardHeader>
-            <CardTitle className="text-lg">
-              Kategorien
-              <span className="ml-2 text-sm font-normal text-muted-foreground">
-                (optional)
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <section>
+          <div className="mb-6 flex items-center gap-3">
+            <div className="rounded-lg bg-accent/10 p-2">
+              <Sparkles className="h-4 w-4 text-accent" />
+            </div>
+            <div>
+              <h2 className="font-display text-lg font-semibold">
+                Kategorien
+                <span className="ml-2 text-sm font-normal text-muted-foreground">(optional)</span>
+              </h2>
+              <p className="text-sm text-muted-foreground">Wähle passende Kategorien für deinen Spot</p>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-border/30 bg-card/30 p-6">
             <CategorySelector
               selected={categories}
               onChange={setCategories}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         {/* Section 4: Photos */}
-        <Card className="border-border/50 bg-card/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Camera className="h-5 w-5 text-primary" />
-              Fotos hochladen
-              <span className="text-sm font-normal text-muted-foreground">
-                (optional)
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <section>
+          <div className="mb-6 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2">
+              <Camera className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <h2 className="font-display text-lg font-semibold">
+                Fotos hochladen
+                <span className="ml-2 text-sm font-normal text-muted-foreground">(optional)</span>
+              </h2>
+              <p className="text-sm text-muted-foreground">Zeige anderen wie es dort aussieht</p>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-border/30 bg-card/30 p-6">
             <PhotoUploader
               photos={photos}
               onPhotosChange={handlePhotosChange}
               spotFolder={spotFolder}
             />
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         {/* Honeypot - invisible to humans */}
         <div className="absolute -left-[9999px] opacity-0" aria-hidden="true">
@@ -447,29 +479,33 @@ export function SubmitForm() {
           />
         </div>
 
-        <Separator />
-
         {/* Submit error */}
         {submitError && (
-          <div className="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
             {submitError}
           </div>
         )}
+
+        {/* Divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
 
         {/* Submit */}
         <Button
           type="submit"
           size="lg"
-          className="w-full text-base font-semibold"
+          className="w-full gap-2.5 font-display text-base font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all duration-300 hover:shadow-primary/30 h-13"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              <Loader2 className="h-5 w-5 animate-spin" />
               Wird eingereicht...
             </>
           ) : (
-            "Spot einreichen"
+            <>
+              Spot einreichen
+              <ArrowRight className="h-5 w-5" />
+            </>
           )}
         </Button>
       </form>

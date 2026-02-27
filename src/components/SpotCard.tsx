@@ -3,8 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, Camera as CameraIcon } from "lucide-react";
+import { MapPin, Camera as CameraIcon, ArrowUpRight } from "lucide-react";
 
 interface SpotCardProps {
   id: string;
@@ -24,38 +23,57 @@ export function SpotCard({
   cover_photo,
 }: SpotCardProps) {
   const truncatedDescription =
-    description.length > 120
-      ? description.slice(0, 120).trimEnd() + "..."
+    description.length > 100
+      ? description.slice(0, 100).trimEnd() + "..."
       : description;
 
   return (
     <Link href={`/spots/${id}`} className="group block">
-      <Card className="overflow-hidden border-border/50 bg-card/50 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
+      <article className="relative overflow-hidden rounded-xl border border-border/40 bg-card/40 transition-all duration-500 hover:border-primary/30 hover:bg-card/70 hover:shadow-2xl hover:shadow-primary/5">
+        {/* Image area */}
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
           {cover_photo ? (
             <Image
               src={cover_photo}
               alt={name}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-cover transition-all duration-700 ease-out group-hover:scale-110 group-hover:brightness-110"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
-            <div className="flex h-full items-center justify-center">
-              <CameraIcon className="h-12 w-12 text-muted-foreground/30" />
+            <div className="flex h-full items-center justify-center bg-gradient-to-br from-secondary to-muted">
+              <CameraIcon className="h-16 w-16 text-muted-foreground/20" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-sm text-white/90">
-            <MapPin className="h-3.5 w-3.5" />
-            {region}
+
+          {/* Gradient overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+          {/* Region badge - top left */}
+          <div className="absolute left-3 top-3">
+            <div className="glass flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-white/90">
+              <MapPin className="h-3 w-3 text-primary" />
+              {region}
+            </div>
+          </div>
+
+          {/* Arrow indicator - top right */}
+          <div className="absolute right-3 top-3 rounded-full bg-primary/80 p-1.5 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-1">
+            <ArrowUpRight className="h-3.5 w-3.5 text-primary-foreground" />
+          </div>
+
+          {/* Title overlay at bottom */}
+          <div className="absolute inset-x-0 bottom-0 p-4">
+            <h3 className="font-display text-xl font-bold leading-tight text-white drop-shadow-lg transition-colors group-hover:text-primary">
+              {name}
+            </h3>
           </div>
         </div>
-        <CardContent className="p-4">
-          <h3 className="mb-1.5 text-lg font-semibold leading-tight text-foreground transition-colors group-hover:text-primary">
-            {name}
-          </h3>
-          <p className="mb-3 text-sm leading-relaxed text-muted-foreground">
+
+        {/* Content area */}
+        <div className="p-4 pt-3">
+          <p className="mb-3 text-sm leading-relaxed text-muted-foreground line-clamp-2">
             {truncatedDescription}
           </p>
           {categories.length > 0 && (
@@ -64,21 +82,23 @@ export function SpotCard({
                 <Badge
                   key={cat}
                   variant="secondary"
-                  className="text-xs font-normal"
+                  className="border-border/50 bg-secondary/60 text-[11px] font-normal text-muted-foreground transition-colors group-hover:border-primary/20 group-hover:text-foreground/80"
                 >
                   {cat}
                 </Badge>
               ))}
               {categories.length > 3 && (
-                <Badge variant="secondary" className="text-xs font-normal">
+                <Badge
+                  variant="secondary"
+                  className="border-border/50 bg-secondary/60 text-[11px] font-normal text-muted-foreground"
+                >
                   +{categories.length - 3}
                 </Badge>
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </article>
     </Link>
   );
 }
-

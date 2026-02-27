@@ -5,8 +5,6 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
   MapPin,
@@ -15,6 +13,7 @@ import {
   Lightbulb,
   ExternalLink,
   Calendar,
+
 } from "lucide-react";
 
 interface Spot {
@@ -94,38 +93,54 @@ export default async function SpotDetailPage({
     year: "numeric",
   });
 
+  const hasPhotoInfo = spot.best_time || spot.equipment || spot.photo_tips;
+
   return (
     <div className="min-h-screen">
-      {/* Back button */}
-      <div className="mx-auto max-w-4xl px-4 pt-6 sm:px-6 lg:px-8">
-        <Button asChild variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
+      {/* Back navigation */}
+      <div className="mx-auto max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+        >
           <Link href="/">
             <ArrowLeft className="h-4 w-4" />
-            Zurück zur Übersicht
+            Zurück
           </Link>
         </Button>
       </div>
 
-      <article className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* Header */}
-        <header className="mb-8">
-          <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4 text-primary" />
-              {spot.region}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4" />
+      <article className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+        {/* ==================== HEADER ==================== */}
+        <header className="mb-10">
+          {/* Meta info row */}
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm">
+              <MapPin className="h-3.5 w-3.5 text-primary" />
+              <span className="font-medium text-primary">{spot.region}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Calendar className="h-3.5 w-3.5" />
               {formattedDate}
-            </span>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+
+          {/* Title */}
+          <h1 className="mb-4 font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
             {spot.name}
           </h1>
+
+          {/* Categories */}
           {spot.categories && spot.categories.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               {spot.categories.map((cat) => (
-                <Badge key={cat} variant="secondary">
+                <Badge
+                  key={cat}
+                  variant="secondary"
+                  className="border-border/50 bg-secondary/60 text-sm text-muted-foreground"
+                >
                   {cat}
                 </Badge>
               ))}
@@ -133,97 +148,103 @@ export default async function SpotDetailPage({
           )}
         </header>
 
-        {/* Photo Gallery */}
+        {/* ==================== PHOTO GALLERY ==================== */}
         {spot.photos && spot.photos.length > 0 && (
-          <section className="mb-10">
+          <section className="mb-12">
             <PhotoGallery photos={spot.photos} spotName={spot.name} />
           </section>
         )}
 
-        {/* Description */}
-        <section className="mb-10">
-          <p className="text-lg leading-relaxed text-foreground/90 whitespace-pre-line">
-            {spot.description}
-          </p>
-        </section>
+        {/* ==================== CONTENT GRID ==================== */}
+        <div className="grid gap-12 lg:grid-cols-[1fr,340px]">
+          {/* Main content */}
+          <div>
+            {/* Description */}
+            <section className="mb-10">
+              <p className="text-lg leading-[1.8] text-foreground/85 whitespace-pre-line">
+                {spot.description}
+              </p>
+            </section>
 
-        <Separator className="mb-10" />
+            {/* Divider */}
+            <div className="mb-10 h-px bg-gradient-to-r from-border/60 via-border/30 to-transparent" />
 
-        {/* Info Grid */}
-        <div className="mb-10 grid gap-4 sm:grid-cols-2">
-          {/* GPS Coordinates */}
-          <Card className="border-border/50 bg-card/50">
-            <CardContent className="flex items-start gap-4 p-5">
-              <div className="rounded-lg bg-primary/10 p-2.5">
-                <MapPin className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h3 className="mb-1 font-semibold">GPS-Koordinaten</h3>
-                <p className="mb-2 text-sm text-muted-foreground">
-                  {spot.latitude.toFixed(4)}° N, {spot.longitude.toFixed(4)}° E
-                </p>
-                <a
-                  href={googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80"
-                >
-                  In Google Maps öffnen
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Best Time */}
-          {spot.best_time && (
-            <Card className="border-border/50 bg-card/50">
-              <CardContent className="flex items-start gap-4 p-5">
-                <div className="rounded-lg bg-accent/10 p-2.5">
-                  <Clock className="h-5 w-5 text-accent" />
+            {/* Location card */}
+            <section className="mb-10">
+              <div className="overflow-hidden rounded-xl border border-border/40 bg-card/40">
+                <div className="flex items-center gap-3 border-b border-border/30 px-5 py-4">
+                  <div className="rounded-lg bg-primary/10 p-2">
+                    <MapPin className="h-4 w-4 text-primary" />
+                  </div>
+                  <h2 className="font-display font-semibold">Standort</h2>
                 </div>
-                <div>
-                  <h3 className="mb-1 font-semibold">Beste Tageszeit</h3>
-                  <p className="text-sm text-muted-foreground">
+                <div className="p-5">
+                  <p className="mb-3 font-mono text-sm text-muted-foreground">
+                    {spot.latitude.toFixed(4)}° N, {spot.longitude.toFixed(4)}° E
+                  </p>
+                  <a
+                    href={googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary/80"
+                  >
+                    In Google Maps öffnen
+                    <ExternalLink className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </a>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Sidebar - Photo tips */}
+          {hasPhotoInfo && (
+            <aside className="space-y-4">
+              <h2 className="font-display text-lg font-semibold text-foreground/80">
+                Foto-Informationen
+              </h2>
+
+              {spot.best_time && (
+                <div className="overflow-hidden rounded-xl border border-border/40 bg-card/40 p-5">
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="rounded-lg bg-primary/10 p-2">
+                      <Clock className="h-4 w-4 text-primary" />
+                    </div>
+                    <h3 className="font-display text-sm font-semibold">Beste Tageszeit</h3>
+                  </div>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
                     {BEST_TIME_LABELS[spot.best_time] || spot.best_time}
                   </p>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              )}
 
-          {/* Equipment */}
-          {spot.equipment && (
-            <Card className="border-border/50 bg-card/50">
-              <CardContent className="flex items-start gap-4 p-5">
-                <div className="rounded-lg bg-primary/10 p-2.5">
-                  <Camera className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="mb-1 font-semibold">Empfohlene Ausrüstung</h3>
-                  <p className="text-sm text-muted-foreground">
+              {spot.equipment && (
+                <div className="overflow-hidden rounded-xl border border-border/40 bg-card/40 p-5">
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="rounded-lg bg-accent/10 p-2">
+                      <Camera className="h-4 w-4 text-accent" />
+                    </div>
+                    <h3 className="font-display text-sm font-semibold">Ausrüstung</h3>
+                  </div>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
                     {spot.equipment}
                   </p>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              )}
 
-          {/* Photo Tips */}
-          {spot.photo_tips && (
-            <Card className="border-border/50 bg-card/50">
-              <CardContent className="flex items-start gap-4 p-5">
-                <div className="rounded-lg bg-accent/10 p-2.5">
-                  <Lightbulb className="h-5 w-5 text-accent" />
-                </div>
-                <div>
-                  <h3 className="mb-1 font-semibold">Foto-Tipps</h3>
-                  <p className="text-sm text-muted-foreground whitespace-pre-line">
+              {spot.photo_tips && (
+                <div className="overflow-hidden rounded-xl border border-border/40 bg-card/40 p-5">
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="rounded-lg bg-primary/10 p-2">
+                      <Lightbulb className="h-4 w-4 text-primary" />
+                    </div>
+                    <h3 className="font-display text-sm font-semibold">Foto-Tipps</h3>
+                  </div>
+                  <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
                     {spot.photo_tips}
                   </p>
                 </div>
-              </CardContent>
-            </Card>
+              )}
+            </aside>
           )}
         </div>
       </article>
